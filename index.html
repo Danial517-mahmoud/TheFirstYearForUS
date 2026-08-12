@@ -1,0 +1,2690 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>عامٌ من النور — ذكرى السنة الأولى</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Tajawal:wght@300;400;500;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        /* ═══════════════════════════════════════════
+       TOKENS — Night Sky Palette
+    ═══════════════════════════════════════════ */
+        :root {
+            --sky-deep: #050d1a;
+            --sky-mid: #0a1628;
+            --sky-card: #0f1f38;
+            --sky-border: #1a3055;
+            --gold: #d4af6a;
+            --gold-light: #f0d080;
+            --gold-dim: rgba(212, 175, 106, 0.25);
+            --star-white: #e8f0ff;
+            --moon: #c8d8f0;
+            --text-main: #e8f0ff;
+            --text-soft: #8aa0c0;
+            --text-gold: #d4af6a;
+            --crescent: #1e3a5f;
+        }
+
+        /* ═══════════════════════════════════════════
+       RESET & BASE (مع ضمان التمركز ومنع الانزياح)
+    ═══════════════════════════════════════════ */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: "Tajawal", sans-serif;
+            background: var(--sky-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* ═══════════════════════════════════════════
+       STAR FIELD CANVAS
+    ═══════════════════════════════════════════ */
+        #starCanvas {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        #app {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            overflow-x: hidden;
+        }
+
+        /* ═══════════════════════════════════════════
+       GOLD TEXT GRADIENT
+    ═══════════════════════════════════════════ */
+        .gold-text {
+            background: linear-gradient(135deg,
+                    #f0d080 0%,
+                    #d4af6a 50%,
+                    #a07840 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════════════ */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4rem 1.5rem;
+            position: relative;
+            width: 100%;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* ═══════════════════════════════════════════
+       FADE-IN SCROLL
+    ═══════════════════════════════════════════ */
+        .reveal {
+            opacity: 0;
+            transform: translateY(28px);
+            transition:
+                opacity 0.9s ease,
+                transform 0.9s ease;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ═══════════════════════════════════════════
+       GOLD DIVIDER
+    ═══════════════════════════════════════════ */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 1.4rem auto;
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to left, transparent, var(--gold));
+        }
+
+        .divider::after {
+            background: linear-gradient(to right, transparent, var(--gold));
+        }
+
+        .divider span {
+            color: var(--gold);
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+
+        /* ═══════════════════════════════════════════
+       PASSWORD GATE
+    ═══════════════════════════════════════════ */
+        #gate {
+            position: fixed;
+            inset: 0;
+            background: var(--sky-deep);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            transition:
+                opacity 0.8s ease,
+                visibility 0.8s ease;
+            padding: 1rem;
+        }
+
+        #gate.hide {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #typer-area {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            min-height: 8rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: 100%;
+        }
+
+        #typer-line1,
+        #typer-line2,
+        #typer-line3 {
+            font-family: "Amiri", serif;
+            font-size: clamp(1.1rem, 3vw, 1.6rem);
+            color: var(--moon);
+            letter-spacing: 0.04em;
+            min-height: 2rem;
+            text-align: center;
+        }
+
+        #typer-line1 {
+            color: var(--gold-light);
+            font-size: clamp(1.3rem, 4vw, 2rem);
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 1.1em;
+            background: var(--gold);
+            animation: blink 0.7s steps(1) infinite;
+            vertical-align: middle;
+            margin-right: 2px;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .gate-box {
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            width: min(400px, 90vw);
+            text-align: center;
+            box-shadow: 0 0 60px rgba(212, 175, 106, 0.08);
+        }
+
+        .gate-box .moon-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .gate-box h2 {
+            font-family: "Amiri", serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .gate-box p {
+            color: var(--text-soft);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .gate-input {
+            width: 100%;
+            padding: 0.85rem 1.2rem;
+            background: var(--sky-mid);
+            border: 1px solid var(--sky-border);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-family: "Tajawal", sans-serif;
+            font-size: 1.1rem;
+            text-align: center;
+            letter-spacing: 0.3em;
+            outline: none;
+            transition: border-color 0.3s;
+            margin-bottom: 1rem;
+        }
+
+        .gate-input:focus {
+            border-color: var(--gold);
+        }
+
+        .gate-input.error {
+            border-color: #e05555;
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-8px);
+            }
+
+            75% {
+                transform: translateX(8px);
+            }
+        }
+
+        .gate-btn {
+            width: 100%;
+            padding: 0.85rem;
+            background: linear-gradient(135deg, #d4af6a, #a07840);
+            border: none;
+            border-radius: 12px;
+            color: var(--sky-deep);
+            font-family: "Tajawal", sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition:
+                transform 0.2s,
+                box-shadow 0.2s;
+        }
+
+        .gate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(212, 175, 106, 0.35);
+        }
+
+        .gate-error {
+            color: #e05555;
+            font-size: 0.88rem;
+            margin-top: 0.5rem;
+            min-height: 1.2rem;
+        }
+
+        /* ═══════════════════════════════════════════
+       NAV DOTS
+    ═══════════════════════════════════════════ */
+        #nav-dots {
+            position: fixed;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            z-index: 200;
+        }
+
+        .ndot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--sky-border);
+            cursor: pointer;
+            transition:
+                background 0.3s,
+                transform 0.3s;
+        }
+
+        .ndot.active {
+            background: var(--gold);
+            transform: scale(1.5);
+        }
+
+        @media (max-width: 768px) {
+            #nav-dots {
+                display: none;
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 1 — HERO
+    ═══════════════════════════════════════════ */
+        #s-hero {
+            background: transparent;
+        }
+
+        .hero-year {
+            font-family: "Amiri", serif;
+            font-size: clamp(5rem, 18vw, 12rem);
+            line-height: 1;
+            opacity: 0.06;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            white-space: nowrap;
+            color: var(--gold);
+        }
+
+        .hero-content {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            border: 1px solid var(--gold-dim);
+            border-radius: 50px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.85rem;
+            color: var(--gold);
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero-title {
+            font-family: "Amiri", serif;
+            font-size: clamp(2.2rem, 7vw, 5rem);
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .hero-sub {
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: var(--text-soft);
+            margin-bottom: 2rem;
+        }
+
+        .hero-date-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 50px;
+            padding: 0.5rem 1.2rem;
+            font-size: 0.9rem;
+            color: var(--moon);
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 2 — COUNTER
+    ═══════════════════════════════════════════ */
+        #s-counter {
+            background: linear-gradient(180deg,
+                    transparent,
+                    var(--sky-mid) 30%,
+                    var(--sky-mid) 70%,
+                    transparent);
+        }
+
+        .counter-title {
+            font-family: "Amiri", serif;
+            font-size: clamp(1.6rem, 4vw, 2.8rem);
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .counter-sub {
+            color: var(--text-soft);
+            text-align: center;
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+        }
+
+        .counter-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            max-width: 640px;
+            width: 100%;
+        }
+
+        .c-box {
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 16px;
+            padding: 1.5rem 0.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .c-box::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 0%,
+                    var(--gold-dim),
+                    transparent 70%);
+        }
+
+        .c-val {
+            font-family: "Amiri", serif;
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            line-height: 1;
+            display: block;
+        }
+
+        .c-label {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            margin-top: 0.4rem;
+            letter-spacing: 0.08em;
+        }
+
+        .counter-poem {
+            margin-top: 2rem;
+            text-align: center;
+            font-family: "Amiri", serif;
+            font-style: italic;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            color: var(--moon);
+            max-width: 500px;
+            line-height: 2;
+        }
+
+        @media (max-width: 480px) {
+            .counter-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 3 — FIRST MESSAGE
+    ═══════════════════════════════════════════ */
+        .first-card {
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            max-width: 540px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+            margin: 1rem auto;
+            text-align: right;
+        }
+
+        .first-card::before {
+            content: "";
+            position: absolute;
+            top: -60px;
+            right: -60px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle,
+                    rgba(212, 175, 106, 0.12),
+                    transparent 70%);
+            border-radius: 50%;
+        }
+
+        .first-label {
+            font-size: 0.78rem;
+            letter-spacing: 0.15em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .first-card h2 {
+            font-family: "Amiri", serif;
+            font-size: clamp(1.5rem, 4vw, 2.2rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1.4rem;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: 17px;
+            top: 36px;
+            width: 1px;
+            height: calc(100% + 0.4rem);
+            background: var(--sky-border);
+        }
+
+        .t-dot {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--sky-mid);
+            border: 1px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1rem;
+        }
+
+        .t-content {
+            flex: 1;
+        }
+
+        .t-time {
+            font-size: 0.8rem;
+            color: var(--gold);
+            margin-bottom: 0.2rem;
+        }
+
+        .t-text {
+            font-size: 0.95rem;
+            color: var(--moon);
+            line-height: 1.7;
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 4 — ENVELOPE & LETTER
+    ═══════════════════════════════════════════ */
+        .envelope-wrap {
+            position: relative;
+            width: min(480px, 90vw);
+            height: 300px;
+            margin: 1.5rem auto;
+            cursor: pointer;
+        }
+
+        .env-body {
+            position: absolute;
+            inset: 0;
+            background: var(--sky-card);
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: box-shadow 0.4s;
+        }
+
+        .env-body:hover {
+            box-shadow: 0 0 40px rgba(212, 175, 106, 0.2);
+        }
+
+        .env-flap {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 160px;
+            background: linear-gradient(160deg, #0f2040, #0a1628);
+            clip-path: polygon(0 0, 50% 80%, 100% 0);
+            border-bottom: 2px solid var(--gold);
+            transform-origin: top center;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3;
+        }
+
+        .env-body.open .env-flap {
+            transform: rotateX(180deg);
+            z-index: 1;
+        }
+
+        .wax-seal {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #c0392b, #7b1515);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px dashed rgba(255, 150, 150, 0.5);
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.6),
+                inset 0 2px 4px rgba(255, 255, 255, 0.3);
+            font-size: 1.8rem;
+            z-index: 2;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .env-body:hover .wax-seal {
+            transform: scale(1.08);
+        }
+
+        .env-hint {
+            position: absolute;
+            bottom: 12px;
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.4;
+            }
+        }
+
+        #letter-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 13, 26, 0.9);
+            backdrop-filter: blur(12px);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s;
+        }
+
+        #letter-modal.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .papyrus {
+            background: #edd9b0;
+            background-image: radial-gradient(circle at 30% 30%,
+                    rgba(200, 160, 100, 0.3),
+                    transparent 60%);
+            border-left: 6px solid #7a5230;
+            border-right: 6px solid #7a5230;
+            border-radius: 8px;
+            width: min(580px, 92vw);
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 3rem 2.5rem;
+            position: relative;
+            color: #2c1810;
+            text-align: right;
+        }
+
+        .papyrus-close {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #7a5230;
+            transition: transform 0.2s;
+        }
+
+        .papyrus-close:hover {
+            transform: scale(1.2);
+        }
+
+        .papyrus h3 {
+            font-family: "Amiri", serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #3e2010;
+            border-bottom: 2px solid rgba(122, 82, 48, 0.3);
+            padding-bottom: 1rem;
+        }
+
+        .papyrus p {
+            font-family: "Amiri", serif;
+            font-size: 1.15rem;
+            line-height: 2.2;
+            color: #2c1810;
+            margin-bottom: 1rem;
+        }
+
+        .papyrus-sig {
+            text-align: left;
+            font-family: "Amiri", serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #3e2010;
+            margin-top: 2rem;
+            border-top: 1px solid rgba(122, 82, 48, 0.3);
+            padding-top: 1rem;
+        }
+
+        .floating-heart {
+            position: fixed;
+            pointer-events: none;
+            z-index: 6000;
+            animation: floatUp 3s ease-out forwards;
+            font-size: 1.5rem;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-120px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 5 — AI PHOTOS + PROMISE
+    ═══════════════════════════════════════════ */
+        .promise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            max-width: 700px;
+            width: 100%;
+            margin: 1.5rem auto;
+        }
+
+        .promise-photo {
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 4/5;
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .promise-photo:hover {
+            transform: scale(1.02);
+        }
+
+        .promise-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .promise-photo .ph-label {
+            font-size: 0.82rem;
+            color: var(--text-soft);
+            text-align: center;
+            padding: 1rem;
+            font-style: italic;
+        }
+
+        .promise-card {
+            background: var(--sky-card);
+            border: 1px solid var(--gold-dim);
+            border-right: 3px solid var(--gold);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 540px;
+            width: 100%;
+            margin: 1.5rem auto;
+            text-align: right;
+        }
+
+        .promise-card p {
+            font-family: "Amiri", serif;
+            font-size: 1.2rem;
+            color: var(--moon);
+            line-height: 2.2;
+            text-align: right;
+        }
+
+        .promise-sig {
+            margin-top: 1.2rem;
+            font-size: 1rem;
+            color: var(--gold);
+            text-align: left;
+            font-style: italic;
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 6 — FIELD MISSIONS
+    ═══════════════════════════════════════════ */
+        #s-field {
+            background: linear-gradient(180deg,
+                    transparent,
+                    rgba(10, 22, 40, 0.8) 20%,
+                    rgba(10, 22, 40, 0.8) 80%,
+                    transparent);
+        }
+
+        .field-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.2rem;
+            max-width: 780px;
+            width: 100%;
+            margin: 1.5rem auto;
+        }
+
+        .field-card {
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            transition: transform 0.3s;
+        }
+
+        .field-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .field-img {
+            width: 100%;
+            aspect-ratio: 16/10;
+            background: var(--sky-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .field-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .field-img .ph-label {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            text-align: center;
+            padding: 1rem;
+            font-style: italic;
+        }
+
+        .field-badge {
+            position: absolute;
+            top: 0.7rem;
+            right: 0.7rem;
+            background: rgba(5, 13, 26, 0.85);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            padding: 0.25rem 0.7rem;
+            font-size: 0.72rem;
+            color: var(--gold);
+            letter-spacing: 0.08em;
+        }
+
+        .field-quote {
+            padding: 1rem 1.2rem;
+            font-family: "Amiri", serif;
+            font-size: 1rem;
+            color: var(--moon);
+            line-height: 1.8;
+            text-align: right;
+            border-top: 1px solid var(--sky-border);
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 7 — CALLS GALLERY
+    ═══════════════════════════════════════════ */
+        .calls-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            overflow-y: visible;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            padding: 1rem 1.5rem 1.5rem;
+            width: 100%;
+            max-width: 900px;
+            scrollbar-width: none;
+        }
+
+        .calls-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .call-card {
+            flex: 0 0 auto;
+            scroll-snap-align: center;
+            width: min(200px, 50vw);
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 16px;
+            overflow: hidden;
+            transition:
+                transform 0.3s,
+                box-shadow 0.3s;
+        }
+
+        .call-card:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 30px rgba(212, 175, 106, 0.15);
+        }
+
+        .call-img {
+            width: 100%;
+            aspect-ratio: 9/16;
+            background: var(--sky-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .call-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .call-img .ph-label {
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            text-align: center;
+            padding: 1rem;
+            font-style: italic;
+        }
+
+        .call-vid-badge {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(0, 200, 100, 0.85);
+            border-radius: 4px;
+            padding: 0.15rem 0.5rem;
+            font-size: 0.7rem;
+            color: #fff;
+        }
+
+        .call-caption {
+            padding: 0.7rem;
+            font-size: 0.82rem;
+            color: var(--text-soft);
+            text-align: center;
+            border-top: 1px solid var(--sky-border);
+        }
+
+        .scroll-hint {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--gold);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            animation: pulse 2s infinite;
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 8 — JAR
+    ═══════════════════════════════════════════ */
+        .jar-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .jar-svg-wrap {
+            cursor: pointer;
+            transition: transform 0.3s;
+            filter: drop-shadow(0 0 20px rgba(212, 175, 106, 0.15));
+        }
+
+        .jar-svg-wrap:hover {
+            transform: scale(1.06);
+        }
+
+        .jar-svg-wrap:active {
+            transform: scale(0.97);
+        }
+
+        .jar-hint {
+            font-size: 0.9rem;
+            color: var(--text-soft);
+            font-style: italic;
+        }
+
+        #jar-popup {
+            position: fixed;
+            inset: 0;
+            background: rgba(5, 13, 26, 0.92);
+            backdrop-filter: blur(16px);
+            z-index: 5000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s;
+        }
+
+        #jar-popup.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .jar-msg-card {
+            background: var(--sky-card);
+            border: 1px solid var(--gold);
+            border-radius: 20px;
+            width: min(460px, 92vw);
+            max-height: 88vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform: scale(0.85);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        #jar-popup.show .jar-msg-card {
+            transform: scale(1);
+        }
+
+        /* منطقة الصورة قابلة للتمرير — تأخذ المساحة المتبقية */
+        .jar-msg-img {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+            scrollbar-color: var(--gold) var(--sky-mid);
+            background: var(--sky-mid);
+            text-align: center;
+            padding: 10px;
+        }
+
+        .jar-msg-img::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .jar-msg-img::-webkit-scrollbar-track {
+            background: var(--sky-mid);
+        }
+
+        .jar-msg-img::-webkit-scrollbar-thumb {
+            background: var(--gold);
+            border-radius: 2px;
+        }
+
+        /* الصورة تظهر بعرضها الكامل وارتفاعها الطبيعي */
+        .jar-msg-img img {
+            width: 100%;
+            height: auto;
+            /* الارتفاع الطبيعي كامل */
+            display: block;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+
+        /* النص والأزرار ثابتة في الأسفل لا تتأثر بالسكرول */
+        .jar-msg-text {
+            flex-shrink: 0;
+        }
+
+        .jar-msg-footer {
+            flex-shrink: 0;
+        }
+
+        .jar-msg-img .ph-label {
+            font-size: 0.85rem;
+            color: var(--text-soft);
+            text-align: center;
+            padding: 1.5rem;
+            font-style: italic;
+        }
+
+        .jar-msg-text {
+            padding: 1.5rem;
+            font-family: "Amiri", serif;
+            font-size: 1.1rem;
+            color: var(--moon);
+            line-height: 2;
+            text-align: right;
+        }
+
+        .jar-msg-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 1.5rem 1.5rem;
+        }
+
+        .jar-next-btn {
+            background: linear-gradient(135deg, var(--gold), #a07840);
+            border: none;
+            border-radius: 10px;
+            padding: 0.6rem 1.4rem;
+            color: var(--sky-deep);
+            font-family: "Tajawal", sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: transform 0.2s;
+        }
+
+        .jar-next-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .jar-close-btn {
+            background: none;
+            border: 1px solid var(--sky-border);
+            border-radius: 10px;
+            padding: 0.6rem 1rem;
+            color: var(--text-soft);
+            cursor: pointer;
+            font-family: "Tajawal", sans-serif;
+            font-size: 0.9rem;
+        }
+
+        .jar-close-btn:hover {
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .confetti-piece {
+            position: fixed;
+            pointer-events: none;
+            z-index: 6000;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-10px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(110vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 9 — FLIPBOOK
+    ═══════════════════════════════════════════ */
+        .book-wrap {
+            position: relative;
+            width: min(280px, 80vw);
+            height: min(380px, 70vw);
+            margin: 2rem auto;
+            perspective: 1200px;
+        }
+
+        .flip-page {
+            position: absolute;
+            inset: 0;
+            transform-origin: right center;
+            transform-style: preserve-3d;
+            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            border-radius: 4px 16px 16px 4px;
+        }
+
+        .flip-page.flipped {
+            transform: rotateY(-180deg);
+        }
+
+        .page-front,
+        .page-back {
+            position: absolute;
+            inset: 0;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 4px 16px 16px 4px;
+            overflow: hidden;
+        }
+
+        .page-front {
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .page-back {
+            background: var(--sky-mid);
+            transform: rotateY(180deg);
+            border: 1px solid var(--sky-border);
+        }
+
+        .page-img {
+            flex: 1;
+            background: var(--sky-mid);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .page-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .page-img .ph-label {
+            font-size: 0.8rem;
+            color: var(--text-soft);
+            text-align: center;
+            padding: 1rem;
+            font-style: italic;
+        }
+
+        .page-caption {
+            padding: 0.8rem;
+            text-align: center;
+            font-family: "Amiri", serif;
+            font-size: 0.95rem;
+            color: var(--moon);
+            border-top: 1px solid var(--sky-border);
+        }
+
+        .page-num {
+            position: absolute;
+            bottom: 0.4rem;
+            left: 0.8rem;
+            font-size: 0.72rem;
+            color: var(--text-soft);
+        }
+
+        .novel-cover .page-front,
+        .final-page .page-front {
+            background: linear-gradient(145deg, #0a1e3a, #061228);
+            border: 2px solid var(--gold);
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .cover-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .cover-title {
+            font-family: "Amiri", serif;
+            font-size: 1.4rem;
+            line-height: 1.5;
+            margin-bottom: 0.5rem;
+        }
+
+        .cover-sub {
+            font-size: 0.78rem;
+            color: var(--gold);
+            letter-spacing: 0.12em;
+        }
+
+        .final-page-text {
+            font-family: "Amiri", serif;
+            font-size: 1.2rem;
+            color: var(--moon);
+            line-height: 2.2;
+        }
+
+        .book-hint {
+            font-size: 0.85rem;
+            color: var(--text-soft);
+            text-align: center;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 10 — MUSIC PLAYER
+    ═══════════════════════════════════════════ */
+        .music-player {
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 24px;
+            padding: 2rem;
+            width: min(420px, 90vw);
+            margin: 1rem auto;
+            box-shadow: 0 0 40px rgba(212, 175, 106, 0.06);
+        }
+
+        .music-art {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0a1e3a, #1a3a6a);
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 3rem;
+            box-shadow: 0 0 30px rgba(212, 175, 106, 0.15);
+            transition: transform 2s linear;
+        }
+
+        .music-art.spinning {
+            animation: spin 8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .music-title {
+            font-family: "Amiri", serif;
+            font-size: 1.3rem;
+            text-align: center;
+            margin-bottom: 0.3rem;
+        }
+
+        .music-artist {
+            font-size: 0.9rem;
+            color: var(--text-soft);
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .music-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .m-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-soft);
+            font-size: 1.4rem;
+            transition:
+                color 0.2s,
+                transform 0.2s;
+        }
+
+        .m-btn:hover {
+            color: var(--gold);
+            transform: scale(1.15);
+        }
+
+        .m-btn.play {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), #a07840);
+            color: var(--sky-deep);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(212, 175, 106, 0.35);
+        }
+
+        .music-progress {
+            width: 100%;
+            margin-bottom: 0.8rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--sky-border);
+            border-radius: 2px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to left, var(--gold), #a07840);
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.5s linear;
+        }
+
+        .music-time {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--text-soft);
+            margin-top: 0.4rem;
+        }
+
+        /* ═══════════════════════════════════════════
+       SECTION 11 — FUTURE LETTER & INTERACTIVE MOON
+    ═══════════════════════════════════════════ */
+        #s-future {
+            text-align: center;
+        }
+
+        /* حاوية القمر التفاعلي الجديد */
+        .interactive-moon-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            margin: 0 auto 20px auto;
+            width: fit-content;
+        }
+
+        .interactive-moon {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            /* مطابق لتصميم القمر البدر الملمس والذهبي الدافئ */
+            background: radial-gradient(circle at 35% 35%,
+                    #fffef0 0%,
+                    #f8f1ae 45%,
+                    #e2c044 85%,
+                    #c59b27 100%);
+            box-shadow:
+                0 0 45px 12px rgba(248, 241, 174, 0.45),
+                0 0 80px 25px rgba(226, 192, 68, 0.25),
+                inset -15px -15px 30px rgba(160, 120, 20, 0.4);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition:
+                transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.4s ease;
+        }
+
+        .interactive-moon:hover {
+            transform: scale(1.06);
+            box-shadow:
+                0 0 55px 18px rgba(255, 223, 0, 0.6),
+                0 0 90px 30px rgba(226, 192, 68, 0.35),
+                inset -15px -15px 30px rgba(160, 120, 20, 0.4);
+        }
+
+        /* المحتوى المتغير داخل القمر عند النقر */
+        .moon-inner-content {
+            position: absolute;
+            inset: 0;
+            background: rgba(5, 13, 26, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 15px;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .moon-inner-content.active {
+            opacity: 1;
+        }
+
+        .moon-inner-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .moon-inner-content p {
+            font-family: "Amiri", serif;
+            font-size: 0.95rem;
+            color: #fffdf0;
+            line-height: 1.7;
+        }
+
+        .moon-hint {
+            font-size: 0.8rem;
+            color: var(--gold);
+            margin-top: 8px;
+            font-style: italic;
+            animation: pulse 2s infinite;
+        }
+
+        .future-card {
+            background: var(--sky-card);
+            border: 1px solid var(--sky-border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem 2rem 2rem;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+            margin: 0 auto;
+        }
+
+        .future-seal {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1a3a6a, #0a1e3a);
+            border: 2px solid var(--gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.2rem;
+            box-shadow: 0 0 25px rgba(212, 175, 106, 0.2);
+        }
+
+        .future-date {
+            display: inline-block;
+            background: var(--sky-mid);
+            border: 1px solid var(--gold);
+            border-radius: 8px;
+            padding: 0.4rem 1rem;
+            font-size: 0.85rem;
+            color: var(--gold);
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+        }
+
+        .future-card h2 {
+            font-family: "Amiri", serif;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .future-card p {
+            color: var(--text-soft);
+            line-height: 1.9;
+            margin-bottom: 1.5rem;
+        }
+
+        .future-locked {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-style: italic;
+        }
+
+        /* ═══════════════════════════════════════════
+       FINAL SECTION
+    ═══════════════════════════════════════════ */
+        #s-end {
+            background: linear-gradient(180deg, transparent, var(--sky-mid));
+            text-align: center;
+        }
+
+        .end-heart {
+            font-size: 5rem;
+            animation: heartbeat 1.8s ease-in-out infinite;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            14% {
+                transform: scale(1.18);
+            }
+
+            28% {
+                transform: scale(1);
+            }
+
+            42% {
+                transform: scale(1.12);
+            }
+
+            70% {
+                transform: scale(1);
+            }
+        }
+
+        .end-title {
+            font-family: "Amiri", serif;
+            font-size: clamp(2rem, 6vw, 4rem);
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 480px) {
+            .promise-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .field-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: 3rem 1rem;
+            }
+
+            .interactive-moon {
+                width: 130px;
+                height: 130px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="starCanvas"></canvas>
+
+    <div id="letter-modal">
+        <div class="papyrus" onclick="event.stopPropagation()">
+            <button class="papyrus-close" onclick="closeLetter()">✕</button>
+            <h3>إلى يارا التي جعلت حياتي أجمل</h3>
+            <p>
+                في كل لحظة من هذا العام الذي مضى ، كنتِ النبض داخل قلبي ، وهدوءاً يمرّ في داخلي حين كانت الأيام ثقيلة ،
+                ما كان لشيءٍ أن يكون بهذا الشكل الجميل والآمن لو لم تكنِ أنتِ في قلبه ،لا أنسى تقديرك لتعبي الذي بذلته
+                في سبيل الإنسانية .
+                .
+            </p>
+            <p>أحببتُ فيكِ أكثر ما أراه في نفسكِ : لطفكِ ، قلبكِ النقي ، صبركِ ،ابتسامتك النابعة من قوة عظيمة ،حنيتكِ
+                التي كانت تغمرني ووضوحكِ في كلّ ما تلمسينه.
+                ولو أنَّ الزمن أراد أن يكتبَ لنا قصةً جديدةً، فإني أريدها أن تبدأ من هذا المكان الذي نعرفُ فيه معنى
+                الدفء.
+
+            </p>
+            <div class="papyrus-sig">— دانيال 🌙</div>
+        </div>
+    </div>
+
+    <div id="jar-popup" onclick="closeJar()">
+        <div class="jar-msg-card" onclick="event.stopPropagation()">
+            <div class="jar-msg-img">
+                <span class="ph-label" id="jar-img-placeholder">لقطة من رسالة مميزة 💬</span>
+            </div>
+            <div class="jar-msg-text" id="jar-msg-text"></div>
+            <div class="jar-msg-footer">
+                <button class="jar-close-btn" onclick="closeJar()">إغلاق</button>
+                <button class="jar-next-btn" onclick="nextJarMsg()">
+                    ✨ رسالة أخرى
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gate">
+        <div id="typer-area">
+            <div id="typer-line1"></div>
+            <div id="typer-line2"></div>
+            <div id="typer-line3"></div>
+        </div>
+        <div class="gate-box">
+            <span class="moon-icon">🌙</span>
+            <h2 class="gold-text">بوابة السر</h2>
+            <p>هذا المكان محجوز لروحٍ واحدةٍ فقط، وقلبي يعرفها جيداً</p>
+            <input id="passInput" class="gate-input" type="password" placeholder="• • • • • •" maxlength="20"
+                onkeydown="if (event.key === 'Enter') checkPass();" />
+            <button class="gate-btn" onclick="checkPass()">ادخلي ✨</button>
+            <div class="gate-error" id="gate-error"></div>
+        </div>
+    </div>
+
+    <div id="app">
+        <section id="s-hero">
+            <div class="hero-year">٣٦٥</div>
+            <div class="hero-content reveal">
+                <div class="hero-badge">ذكرى السنة الأولى 🌙</div>
+                <h1 class="hero-title gold-text">أجمل سنة مرقت بحياتي</h1>
+                <p class="hero-sub">
+                    كانت مليانة مشاعر مختلطة دعم حب ما بعمري حلمت عيشو خلانا نخلق من
+                    جديد وأهم من كل شي كنا مع بعضنا عالمرّة قبل الحلوة مستحيل يروح من
+                    بالي يوم واحد منها ✨
+                </p>
+                <div class="divider"><span>✦</span></div>
+                <div class="hero-date-tag">
+                    <span>🌙</span>
+                    <span>٦ آب ٢٠٢٥ — ٦ آب ٢٠٢٦</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="s-counter">
+            <div class="reveal">
+                <span class="first-label" style="text-align: center; display: block">منذ تلك اللحظة</span>
+                <h2 class="counter-title gold-text">مضى على معرفتنا...</h2>
+                <p class="counter-sub">
+                    من أول مرة حكينا، وكانت أجمل هديةٍ من عند رب العالمين
+                </p>
+                <div class="counter-grid">
+                    <div class="c-box">
+                        <span class="c-val gold-text" id="c-days">0</span><span class="c-label">يوم</span>
+                    </div>
+                    <div class="c-box">
+                        <span class="c-val gold-text" id="c-hours">00</span><span class="c-label">ساعة</span>
+                    </div>
+                    <div class="c-box">
+                        <span class="c-val gold-text" id="c-min">00</span><span class="c-label">دقيقة</span>
+                    </div>
+                    <div class="c-box">
+                        <span class="c-val gold-text" id="c-sec">00</span><span class="c-label">ثانية</span>
+                    </div>
+                </div>
+                <p class="counter-poem">
+                    عشت عمر كامل بهي السنة ...لقيتك حياتي وملجأي يلي بلاقيه دائماً بتمنى
+                    يظل هيك على طول بالعادة ما مننتبه للوقت كثير بس كل ثانية كانت تمرق
+                    كنتِ فيها يروشي حبيبتي
+                </p>
+            </div>
+        </section>
+
+        <section id="s-first">
+            <div class="reveal">
+                <h2 class="counter-title gold-text" style="margin-bottom: 0.5rem">
+                    اليوم الذي غيّر كل شي
+                </h2>
+                <div class="divider"><span>🌙</span></div>
+                <div class="first-card">
+                    <span class="first-label">بداية القصة</span>
+                    <h2>٥ آب ٢٠٢٥</h2>
+                    <div class="timeline-item">
+                        <div class="t-dot">💬</div>
+                        <div class="t-content">
+                            <div class="t-time">٧:١٢ مساءً — توقيت سوريا</div>
+                            <div class="t-text">
+                                أتت رسالة منكِ ولم أراها فوراً بسبب انشغالي في الميدان ولكن
+                                عندما قمت بالرد عليكِ لم أكن أعرف أنكِ ستصبحين أغلى من عيوني
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="t-dot">⌛</div>
+                        <div class="t-content">
+                            <div class="t-time">ليلة كاملة</div>
+                            <div class="t-text">
+                                حديث واستماع من الطرفين وكأننا خلقنا لنكمل بعض لم نتردد في
+                                تقديم حتى الدعم المعنوي لكل منا
+                            </div>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="t-dot">🌅</div>
+                        <div class="t-content">
+                            <div class="t-time">٦ آب — ١٢:٤٨ ظهراً</div>
+                            <div class="t-text">
+                                رددتُ عليها، وبدأت قصتنا ببطءٍ جميل، كأنّها أول صفحةٍ في
+                                روايةٍ لا تُنسى
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="s-letter">
+            <div class="reveal">
+                <h2 class="counter-title gold-text" style="margin-bottom: 0.3rem">
+                    رسالة من القلب
+                </h2>
+                <p style="color: var(--text-soft); margin-bottom: 1.5rem">
+                    انقري على الختم لتفتحيه
+                </p>
+                <div class="envelope-wrap">
+                    <div class="env-body" id="env-body" onclick="openEnvelope()">
+                        <div class="env-flap"></div>
+                        <div class="wax-seal">🌙</div>
+                        <span class="env-hint">انقري هنا ✨</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+
+        <section id="s-field">
+            <div class="reveal">
+                <div class="hero-badge" style="margin-bottom: 1rem">
+                    🌙 الهلال الأحمر — مهمات ميدانية
+                </div>
+                <h2 class="counter-title gold-text" style="margin-bottom: 0.3rem">
+                    كنتِ معي دون أن تعلمي
+                </h2>
+                <p style="
+              color: var(--text-soft);
+              margin-bottom: 1.5rem;
+              max-width: 500px;
+              margin-inline: auto;
+            ">
+                    في أصعب اللحظات ميدانياً... كان اسمكِ يمنحني قوة لا أعرف مصدرها
+                </p>
+                <div class="field-grid">
+                    <div class="field-card">
+                        <div class="field-img">
+                            <img src="./photo_2026-08-09_13-40-42.jpg" alt="" />
+                            <div class="field-badge">🌙 هلال أحمر</div>
+                        </div>
+                        <div class="field-quote">
+                            "في أصعب اللحظات، كانت فكرةُ أنَّ في العالم شخصاً مثلَكِ تكفي
+                            لتُحدّثَ في داخلي نوراً جديداً"
+                        </div>
+                    </div>
+                    <div class="field-card">
+                        <div class="field-img">
+                            <img src="./photo_2026-08-09_13-41-07.jpg" alt="" style="width: fit-content;" />
+                            <div class="field-badge">🌙 هلال أحمر</div>
+                        </div>
+                        <div class="field-quote">
+                            "كان قلبي يحملُ أشياء كثيرة، لكنَّ اسمَكِ كان يُعيدُه إلى صوابه
+                            بسرعةٍ لا تُصدق"
+                        </div>
+                    </div>
+                    <div class="field-card">
+                        <div class="field-img">
+                            <img src="./photo_2026-08-09_13-40-31.jpg " alt="" style="width: fit-content;" />
+                            <div class="field-badge">🌙 هلال أحمر</div>
+                        </div>
+                        <div class="field-quote">
+                            "الميدان علّمني أنَّ الصمود ليس مجرد قوة، بل أيضاً أن تكونَ
+                            لديكَ من يُشبهُ لكَ النور"
+                        </div>
+                    </div>
+                    <div class="field-card">
+                        <div class="field-img">
+                            <img src="./photo_2026-08-09_17-16-29.jpg" alt="" style="width: fit-content;">
+                            <div class="field-badge">🌙 هلال أحمر</div>
+                        </div>
+                        <div class="field-quote">
+                            "عندما أذهب للمناطق الساخنة والتي فيها خطر لم يكن هذا الدرع هو الحامي لجسدي و روحي بل كان
+                            حبّكِ واسمكِ الذي يرافقني أينما ذهبت"
+                        </div>
+                    </div>
+
+                    <div class="field-card">
+                        <div class="field-img">
+                            <img src="./photo_2026-08-09_20-13-52.jpg" alt="" style="width: fit-content;">
+
+                        </div>
+                        <div class="field-quote">
+                            بعمري ما أذيت حدا أو اتعديت على حدا لما شفت أنو الظالمين عم يستغلوا أضغف الناس اتجهزت بهيك
+                            زي وطلعت وأني على يقين ما رح انهزم
+                        </div>
+                    </div>
+
+                    <div class="field-card">
+                        <div class="field-img">
+                            <img src="./photo_2026-08-09_20-13-56.jpg" alt="" style="width: fit-content;">
+
+                        </div>
+                        <div class="field-quote">
+                            بهذا اليوم كنت يا دوب واصل من الميدان الساعة كانت 2 ونص الصبح و وقتيها كنتِ حاكتيني لأول مرة
+                            ❤️
+                        </div>
+
+
+                    </div>
+                </div>
+        </section>
+
+        <section id="s-calls">
+            <div class="reveal">
+                <h2 class="counter-title gold-text" style="margin-bottom: 0.3rem">
+                    لحظاتنا عبر الشاشة
+                </h2>
+                <p style="color: var(--text-soft); margin-bottom: 1rem">
+                    كل مكالمة حكيناها أخذت منها سكرينات كرمال اعملك مثل هاليوم هيك شي
+                </p>
+                <div class="scroll-hint" style="justify-content: center">
+                    <span>‹</span> <span>اسحبي للصور</span> <span>›</span>
+                </div>
+                <div class="calls-scroll">
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./firstscreen1.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">هي كانت أول مكالمة بيناتنا يا روحي يا يارا ....كنتِ حلوة بروحك وبقلبك
+                            وبكلامك بتذكر وزنك 42 كيلو هي الصورة بحبا وبقلبي لأن كانت بداية لحب ما بيخلص</div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./secondscreen2.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">
+                            هي المكالمة الثانية بيناتنا كنت على سطح المركز بتذكر كرمال النت و وقتيها وعدتك انتبه لحالي
+                            وطلبت منك تهتمي بصحتك كرمالي ،و وعدتيني تهتمي بأكلك ونومك وأني كنت كثير بحبك كثير ❤️
+                        </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen1.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">
+                            بكل مرة كنت ارجع من مهمة ما كان يدفيني غير شوفتك وأنتِ نايمة بأمان انخلق بينا خلاني كون أقوى
+                            حدا بالعالم🥰
+                        </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen2.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">هون كنتِ مزعوجة من حدا عندكن و أني ما قبلت سكّر قلتيلي ما بنام وحدا عم
+                            يتطلع عليي ما كانت المكالمة طوبلة بس نمتي وثاني الصبح حكتيلي قديش نمتي مرتاحة 🥺</div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen4.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">
+                            نعيماً نعيماً يا قمري هي الكلمة بس فتحت المكالمة قلتلك ياها كثير بحبك حبيبتي ❤️
+                        </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen5.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">
+                            يقبرني يقبرني تمتومك شو بحبك بعشق كل شي فيكِ يا أغلى من عيوني 😍
+                        </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen7.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">بهاليوم خلصتي شغلك عبكير ورنتيلي قبل ما أطلع عالمهمة ما بتصدقي الشعور
+                            يلي بيوصلني وشو بحس ! رح قلك بحبك لتخلص الدنيا </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen9.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">تتذكري خزانتك؟😂 أي كنا عم نضحك عليها يا روح قلبي </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen11.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">يقبرني يقبرني وجهك بوبو حياتي حبيتك وبحبك ورح ظل حبك يا أغلى من عيوني
+                            ❤️</div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen12.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">يا عيون دانيال وقلبو ورحو وحياتو ما حدا بشوف تعبك وشغلك رغم كل شي
+                            بتمري فيه غيري أني صدقيني 🥺❤️</div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen17.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">شو حلو شعور الواحد يصفن بقلبو البعيد عنو ويكون نسيان الدنيا كلا ....ما
+                            بقدر اشرحلك بهي اللحظة شو بحس جواتي 🥹</div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen18.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">
+                            يقبروني عيونك النايمين يا ريت بقدر حطك بنص قلبي 🥺
+                        </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./screen19.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">
+                            هون الأمان يلي بالصورة ما بينوصف ....بدي بدل العمر عمرين لأقدر خبرك قديش بحبك ،يا ترى رح فيق
+                            بيوم واتصبح بوجهك حدي ؟🥹
+                        </div>
+                    </div>
+                    <div class="call-card">
+                        <div class="call-img">
+                            <span class="ph-label"><img src="./finalscreen.jpg" alt=""></span>
+                            <div class="call-vid-badge">● مباشر</div>
+                        </div>
+                        <div class="call-caption">
+                            هي آخر مكالمة حكيناها وكنتِ مستعجلة بدك تطلعي وكنتِ كثير طالعة حلوة كثير بحبك أني ❤️
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="s-jar">
+            <div class="reveal">
+                <h2 class="counter-title gold-text" style="margin-bottom: 0.3rem">
+                    جرة الذكريات
+                </h2>
+                <p style="color: var(--text-soft); margin-bottom: 2rem">
+                    كل ضغطة = ذكرى مميزة منك ✨
+                </p>
+                <div class="jar-wrap">
+                    <div class="jar-svg-wrap" onclick="openJar()">
+                        <svg width="160" height="210" viewBox="0 0 160 210" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <rect x="40" y="18" width="80" height="18" rx="6" fill="#1A3055" stroke="#D4AF6A"
+                                stroke-width="1.5" />
+                            <rect x="30" y="30" width="100" height="10" rx="5" fill="#0F1F38" stroke="#D4AF6A"
+                                stroke-width="1" />
+                            <path
+                                d="M28 44 Q20 60 20 90 L20 170 Q20 190 80 190 Q140 190 140 170 L140 90 Q140 60 132 44 Z"
+                                fill="#0A1628" stroke="#D4AF6A" stroke-width="1.5" />
+                            <path d="M36 55 Q32 75 32 100" stroke="rgba(212,175,106,0.3)" stroke-width="3"
+                                stroke-linecap="round" />
+                            <text x="55" y="100" fill="#D4AF6A" font-size="18" opacity="0.7">
+                                💛
+                            </text>
+                            <text x="85" y="130" fill="#D4AF6A" font-size="14" opacity="0.5">
+                                💙
+                            </text>
+                            <text x="60" y="155" fill="#D4AF6A" font-size="12" opacity="0.6">
+                                🤍
+                            </text>
+                            <text x="90" y="105" fill="#D4AF6A" font-size="10" opacity="0.4">
+                                ✨
+                            </text>
+                            <rect x="42" y="115" width="76" height="40" rx="6" fill="rgba(212,175,106,0.1)"
+                                stroke="rgba(212,175,106,0.3)" stroke-width="1" />
+                            <text x="80" y="133" fill="#D4AF6A" font-size="9" text-anchor="middle" font-family="serif">
+                                ذكرياتنا
+                            </text>
+                            <text x="80" y="148" fill="#D4AF6A" font-size="8" text-anchor="middle" font-family="serif">
+                                المميزة
+                            </text>
+                        </svg>
+                    </div>
+                    <p class="jar-hint">انقري على الجرة لتظهر ذكرى عشوائية 🌙</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="s-flip">
+            <div class="reveal">
+                <h2 class="counter-title gold-text" style="margin-bottom: 0.3rem">
+                ألبومنا المصوّر
+                </h2>
+                <p style="color: var(--text-soft); margin-bottom: 0.5rem">
+                    انقري لتقلبي صفحات ألبوم
+                </p>
+                <div class="book-wrap" id="bookWrap"></div>
+                <p class="book-hint">← انقري على الصفحة لتقليبها</p>
+            </div>
+        </section>
+
+       
+
+        <!-- ── SECTION 11: FUTURE LETTER WITH INTERACTIVE MOON ── -->
+        <section id="s-future">
+            <div class="reveal">
+                <h4 class="counter-title gold-text" style="margin-bottom: 1rem">
+                بسماي وبفضائي مفاجأة ليروشة قلبي  ✨
+                </h4>
+
+                <!-- القمر التفاعلي الجديد -->
+                <div class="interactive-moon-wrap" onclick="handleMoonClick()">
+
+                    <div class="interactive-moon" id="interactiveMoon">
+                        <div class="moon-inner-content" id="moonInnerContent">
+                            <!-- سيتم ملؤه ديناميكياً عبر الجافاسكريبت -->
+                        </div>
+                        <img src="./ChatGPT Image Aug 6, 2026, 08_04_02 AM.png" alt=""
+                            style="width: 190px; height: 190px;">
+                    </div>
+                    <div class="moon-hint" id="moonHintText">
+                        انقري على القمر لتكتشفي ما بداخله ✨
+                    </div>
+                </div>
+
+                <div class="future-card">
+                    <div class="future-seal">👨‍💻</div>
+                    <div class="future-date">بتمنى يكون هالمشروع عجبك</div>
+                    <h2>اقريها منيح</h2>
+                    <p>
+                        هيك بكون خلص الموقع يا عمري رسالتي إلك بين هالنجوم وتحت هالقمر : ساويت هيك شي لخبرك أنو أنتِ بعيدة عني بالمسافة بس أنتِ على طول بنص قلبي و روحي محاوطتك دائماً بوعدك وعد شرف بين هالنجوم أنو رح شوفك وضمك وعوضك عن كل شي يا حبيبة روحي 💕
+                    </p>
+                    <div class="future-locked">
+                        🔒 <span>Powered By Eng-Danial AbdEldeen</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="s-end">
+            <div class="reveal" style="text-align: center">
+                <span class="end-heart">🌙</span>
+                <h1 class="end-title gold-text">عامٌ واحد...<br />وكأنه عمر كامل</h1>
+                <div class="divider"><span>✦</span></div>
+                <p style="
+              color: var(--text-soft);
+              max-width: 440px;
+              margin: 0 auto;
+              line-height: 2;
+              font-family: &quot;Amiri&quot;, serif;
+              font-size: 1.1rem;
+            ">
+                    "شكراً لأول رسالة أرسلتِها...<br />لم تعرفي حينها أنكِ كنتِ تكتبين
+                    أجمل فصول حياتي"
+                </p>
+                <p style="
+              margin-top: 2rem;
+              color: var(--gold);
+              font-family: &quot;Amiri&quot;, serif;
+              font-size: 1.3rem;
+            ">
+                    — دانيال 🌙
+                </p>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        /* ═══════════════════════════════════════════
+     STAR FIELD
+  ═══════════════════════════════════════════ */
+        const canvas = document.getElementById("starCanvas");
+        const ctx = canvas.getContext("2d");
+        let stars = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        function initStars(count = 200) {
+            stars = [];
+            for (let i = 0; i < count; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    r: Math.random() * 1.4 + 0.3,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.008 + 0.003,
+                    dir: Math.random() > 0.5 ? 1 : -1,
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach((s) => {
+                s.alpha += s.speed * s.dir;
+                if (s.alpha >= 1 || s.alpha <= 0.1) s.dir *= -1;
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(200,215,255,${s.alpha})`;
+                ctx.fill();
+            });
+            requestAnimationFrame(drawStars);
+        }
+
+        window.addEventListener("resize", () => {
+            resizeCanvas();
+            initStars();
+        });
+        resizeCanvas();
+        initStars();
+        drawStars();
+
+        /* ═══════════════════════════════════════════
+     TYPEWRITER
+  ═══════════════════════════════════════════ */
+        const lines = [
+            { el: "typer-line1", text: "في يوم من الأيام..." },
+            { el: "typer-line2", text: "التقت كلمات بسيطة بقلب يبحث عن معنى" },
+            { el: "typer-line3", text: "وبدأت القصة..." },
+        ];
+        let lineIdx = 0,
+            charIdx = 0;
+        let typerDone = false;
+
+        function typeNext() {
+            if (typerDone) return;
+            if (lineIdx >= lines.length) {
+                typerDone = true;
+                return;
+            }
+            const { el, text } = lines[lineIdx];
+            const elem = document.getElementById(el);
+            if (charIdx < text.length) {
+                elem.innerHTML =
+                    text.slice(0, charIdx + 1) + '<span class="cursor"></span>';
+                charIdx++;
+                setTimeout(typeNext, 80);
+            } else {
+                elem.innerHTML = text;
+                lineIdx++;
+                charIdx = 0;
+                setTimeout(typeNext, 600);
+            }
+        }
+        setTimeout(typeNext, 800);
+
+        /* ═══════════════════════════════════════════
+     PASSWORD GATE
+  ═══════════════════════════════════════════ */
+        const SECRET = "Dodo&Bobo@2025";
+
+        function checkPass() {
+            const val = document.getElementById("passInput").value;
+            const errEl = document.getElementById("gate-error");
+            const inp = document.getElementById("passInput");
+            if (val === SECRET) {
+                document.getElementById("gate").classList.add("hide");
+                startCounter();
+            } else {
+                errEl.textContent = "كلمة المرور غير صحيحة 🌙";
+                inp.classList.add("error");
+                setTimeout(() => {
+                    inp.classList.remove("error");
+                    inp.value = "";
+                }, 600);
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+     COUNTER
+  ═══════════════════════════════════════════ */
+        const START = new Date("2025-08-05T16:12:00Z");
+
+        function startCounter() {
+            function tick() {
+                const diff = Date.now() - START.getTime();
+                if (diff < 0) return;
+                const d = Math.floor(diff / 86400000);
+                const h = Math.floor((diff % 86400000) / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById("c-days").textContent = d;
+                document.getElementById("c-hours").textContent = String(h).padStart(
+                    2,
+                    "0",
+                );
+                document.getElementById("c-min").textContent = String(m).padStart(
+                    2,
+                    "0",
+                );
+                document.getElementById("c-sec").textContent = String(s).padStart(
+                    2,
+                    "0",
+                );
+            }
+            tick();
+            setInterval(tick, 1000);
+        }
+
+        /* ═══════════════════════════════════════════
+     SECTIONS & NAV DOTS
+  ═══════════════════════════════════════════ */
+        const secIds = [
+            "s-hero",
+            "s-counter",
+            "s-first",
+            "s-letter",
+            "s-promise",
+            "s-field",
+            "s-calls",
+            "s-jar",
+            "s-flip",
+            "s-music",
+            "s-future",
+        ];
+        const ndots = document.querySelectorAll(".ndot");
+
+        function goTo(i) {
+            document
+                .getElementById(secIds[i])
+                .scrollIntoView({ behavior: "smooth" });
+        }
+
+        const revealObs = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((e) => {
+                    if (e.isIntersecting) {
+                        e.target
+                            .querySelectorAll(".reveal")
+                            .forEach((el) => el.classList.add("visible"));
+                        const idx = secIds.indexOf(e.target.id);
+                        if (idx !== -1)
+                            ndots.forEach((d, i) =>
+                                d.classList.toggle("active", i === idx),
+                            );
+                    }
+                });
+            },
+            { threshold: 0.35 },
+        );
+
+        secIds.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) revealObs.observe(el);
+        });
+
+        /* ═══════════════════════════════════════════
+     ENVELOPE & LETTER
+  ═══════════════════════════════════════════ */
+        function openEnvelope() {
+            document.getElementById("env-body").classList.add("open");
+            spawnHearts();
+            setTimeout(() => {
+                document.getElementById("letter-modal").classList.add("show");
+            }, 500);
+        }
+
+        function closeLetter() {
+            document.getElementById("letter-modal").classList.remove("show");
+            setTimeout(
+                () => document.getElementById("env-body").classList.remove("open"),
+                400,
+            );
+        }
+        document.getElementById("letter-modal").addEventListener("click", (e) => {
+            if (e.target === document.getElementById("letter-modal")) closeLetter();
+        });
+
+        function spawnHearts() {
+            const env = document.getElementById("env-body").getBoundingClientRect();
+            const cx = env.left + env.width / 2;
+            const cy = env.top + env.height / 2;
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const h = document.createElement("div");
+                    h.className = "floating-heart";
+                    h.textContent = ["❤️", "🌙", "✨", "💛", "🤍"][
+                        Math.floor(Math.random() * 5)
+                    ];
+                    h.style.left = cx + (Math.random() - 0.5) * 200 + "px";
+                    h.style.top = cy + (Math.random() - 0.5) * 80 + "px";
+                    h.style.animationDuration = 2 + Math.random() * 1.5 + "s";
+                    document.body.appendChild(h);
+                    setTimeout(() => h.remove(), 3500);
+                }, i * 80);
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+     INTERACTIVE MOON STATES (النقرات على القمر)
+  ═══════════════════════════════════════════ */
+        let moonClickState = 0;
+
+        function handleMoonClick() {
+            const innerContent = document.getElementById("moonInnerContent");
+            const hintText = document.getElementById("moonHintText");
+
+            moonClickState = (moonClickState + 1) % 3;
+
+            if (moonClickState === 1) {
+                const moonArt =
+                    "data:image/svg+xml;charset=UTF-8," +
+                    encodeURIComponent(
+                        `img src="./ChatGPT Image Aug 6, 2026, 08_04_02 AM.png" alt="" style="width: 190px; height: 190px; object-fit: cover;"`,
+                    );
+                innerContent.innerHTML = `<img src="./moon_ourimg.png" alt="" style="width: 190px; height: 190px; object-fit: cover;" />`;
+                innerContent.classList.add("active");
+                hintText.textContent = "انقري مرة أخرى لتظهر العبارة السحرية ✨";
+            } else if (moonClickState === 2) {
+                innerContent.innerHTML = `<p>"أنتِ قمري يلي مضوي سماي حبيبتي يروشي كنتِ ورح تظلك النور بعتمة أيامي💛💫"</p>`;
+                innerContent.classList.add("active");
+                hintText.textContent = "انقري للعودة للقمر الصافي ✨";
+            } else {
+                innerContent.classList.remove("active");
+                innerContent.innerHTML = "";
+                hintText.textContent = "انقري على القمر لتكتشفي ما بداخله ✨";
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+     JAR — MESSAGES
+  ═══════════════════════════════════════════ */
+        const jarMessages = [
+            {
+                imgSrc: "firstmessage.jpg",
+                text: '"أول رسالة منكِ بالبداية فكرتك حدا من الساحل هون بالسويدا وبحاجة مساعدة ....بس بعدين اتأكدت أنو كانت بداية لأمل ونور وأمان وأخلاق ما بيخلصوا "',
+            },
+            {
+                imgSrc: "lovelymessage1.jpg",
+                text: '"بحبك قد كل كلمة من يلي كتبتيهن ...بس يلي متأكد منو رح حبك وبحبك أكثر وأكثر يا روح هالروح ❤️"',
+            },
+            {
+                imgSrc: "lovelymessage2.jpg",
+                text: '"يروشي حبيبة روحي هون بس قريت كلامك كنت بس بدي ضمك أني ما عندي شك أنو رب العالمين بعثنا لبعض وكمان ما عندي شك أنو رح يخلينا نكفي مع بعض"',
+            },
+            {
+                imgSrc: "lovelymessage3.jpg",
+                text: '"كل نفس بتنفسو بتكوني أنتِ فيه بتصدقي؟! كيف بعد هيك رسالة جاي من نص قلبك لك لو آخر لحظة بعمري رح ضمك ما بتعرفي قديش بحاجة ضمك بحبك أني بحبك وبعدني ما عم اعرف رد على هي الرسالة ❤️"',
+            },
+            {
+                imgSrc: "lovelymessage4.jpg",
+                text: '"بالعادة بس صورك وكلامنا وذكرياتنا وصوتك يتردد ببالي بحس لازم اكتبلك يلي جواتي بحاول اكتب واكتب بس صدقيني يلي جواتي يروشي حبيبتي ويلي بحملو إلك أكبر بكثير من هذا الكلام ...وطالما رسائلي عم تقريها بدي منك شي وحيد شو ما صار بهالحياة ظلك مثل ما أنتِ لا تخلي شي يوقفك أنتِ حدا بيجنن وحلو مش لأنك حبيبتي عم احكي هيك لا أكيد بس لأنك حدا بيستاهل يعيش براحة وسعادة ما بتخلص ومن دانيال يلي حبك بكل ذرة صدق بقلك لا تنسي وصيتي يلي وصيتك ياها "',
+            },
+        ];
+        let jarIdx = 0;
+
+        function openJar() {
+            jarIdx = Math.floor(Math.random() * jarMessages.length);
+            showJarMsg();
+            document.getElementById("jar-popup").classList.add("show");
+            launchConfetti();
+        }
+
+        function showJarMsg() {
+            const msg = jarMessages[jarIdx];
+            document.getElementById("jar-msg-text").textContent = msg.text;
+            const imgEl = document.querySelector(".jar-msg-img");
+            if (msg.imgSrc) {
+                imgEl.innerHTML = `<img src="${msg.imgSrc}" alt="ذكرى" style="width:100%;height:100%;object-fit:cover"/>`;
+            } else {
+                imgEl.innerHTML = `<span class="ph-label">💬 لقطة شاشة رسالة مميزة<br/><small>🔧 أضف الصورة في الـ JS</small></span>`;
+            }
+        }
+
+        function nextJarMsg() {
+            jarIdx = (jarIdx + 1) % jarMessages.length;
+            showJarMsg();
+            launchConfetti();
+        }
+
+        function closeJar() {
+            document.getElementById("jar-popup").classList.remove("show");
+        }
+
+        function launchConfetti() {
+            const colors = [
+                "#D4AF6A",
+                "#C8D8F0",
+                "#E8F0FF",
+                "#FFD700",
+                "#FFA0C0",
+                "#80E0FF",
+            ];
+            for (let i = 0; i < 40; i++) {
+                setTimeout(() => {
+                    const c = document.createElement("div");
+                    c.className = "confetti-piece";
+                    c.style.left = Math.random() * 100 + "vw";
+                    c.style.top = "-10px";
+                    c.style.background =
+                        colors[Math.floor(Math.random() * colors.length)];
+                    c.style.width = Math.random() * 8 + 4 + "px";
+                    c.style.height = Math.random() * 8 + 4 + "px";
+                    c.style.borderRadius = Math.random() > 0.5 ? "50%" : "2px";
+                    c.style.animationDuration = 2 + Math.random() * 2 + "s";
+                    c.style.animationDelay = Math.random() * 0.5 + "s";
+                    document.body.appendChild(c);
+                    setTimeout(() => c.remove(), 4500);
+                }, i * 40);
+            }
+        }
+
+        /* ═══════════════════════════════════════════
+     FLIPBOOK
+  ═══════════════════════════════════════════ */
+        const flipPages = [
+            { imgSrc: "romance.png", caption: "رح نتصورها واقع", audioSrc: "الليل وسماه.mp3" },
+            { imgSrc: "romance2.jpg", caption: "يقبرني وجهك شو بحبك", audioSrc: "سهام الهوى.mp3" },
+            { imgSrc: "romance3.jpg", caption: "يقبروني عيونك شو بحبن", audioSrc: "ياما عيون شغلوني.mp3" },
+            { imgSrc: "romance4.jpg", caption: "أملي و اماني وحياتي ", audioSrc: "أملي حياتي.mp3" },
+            { imgSrc: "romance5.jpg", caption: ' : "مين يلي قلك أنو بقدر أتركك أصلاً"', audioSrc: "مين يلي قلك.mp3" },
+            { imgSrc: "romance6.jpg", caption: "صالحت بيك أيامي بحبك وبعبدك", audioSrc: "صالحت بيك أيامي.mp3" },
+            { imgSrc: "romance7.jpg", caption: "وعمري ما أشكي من حبك يروشي و بوبو حياتي", audioSrc: "وعمري ما اشكي من حبك.mp3" },
+            { imgSrc: "romance8.jpg", caption: "أنتِ روحي وقلبي وحياتي وعمري وعيوني ", audioSrc: "أنت روحي وكل عمري.mp3" },
+            { imgSrc: "romance9.jpg", caption: "أجمل بنت عرفتها ورح أعرفها بكل حياتي ", audioSrc: "تملي معاك ولو حتى بعيد عني.mp3" },
+            { imgSrc: "romance10.jpg", caption: "حتى لو بيني وبينك بلاااد رح ضمك بوعدك", audioSrc: "تملي معاك ولو حتى بعيد عني.mp3" },
+            { imgSrc: "romance11.jpg", caption: "هي صورة من أختك  رهف يا سندي كثير بحب أناقتك", audioSrc: "في يوم وليله.mp3" },
+            { imgSrc: "romance12.jpg", caption: "أناقة وحنية وأنوثة وجمال كيف حاملتيهن فيني أفهم؟😍", audioSrc: "وعمري ما اشكي من حبك.mp3" },
+        ];
+
+        /* مشغل صوت مشترك للفليبوك */
+        const flipAudio = new Audio();
+        flipAudio.volume = 0.75;
+        let flipStopTimer = null;
+
+        function playPageClip(src) {
+            if (!src) return;
+            flipAudio.pause();
+            clearTimeout(flipStopTimer);
+            flipAudio.src = src;
+            flipAudio.currentTime = 0;
+            flipAudio.play().catch(() => { });
+            flipStopTimer = setTimeout(() => flipAudio.pause(), 30000);
+        }
+
+        const bookWrap = document.getElementById("bookWrap");
+        let pageZIdx = flipPages.length + 3;
+
+        const cover = document.createElement("div");
+        cover.className = "flip-page novel-cover";
+        cover.style.zIndex = pageZIdx--;
+        cover.onclick = () => doFlip(cover, null);
+        cover.innerHTML = `
+  <div class="page-front">
+    <div class="cover-icon">📖</div>
+    <div class="cover-title gold-text">ذكريات<br/>انحفرت جواتنا</div>
+    <div class="cover-sub" style="margin-top:0.8rem;font-size:0.75rem;letter-spacing:0.1em;color:var(--gold)">
+      رواية قصتنا — السنة الأولى
+    </div>
+  </div>
+  <div class="page-back"></div>`;
+        bookWrap.appendChild(cover);
+
+        flipPages.forEach((pg, i) => {
+            const p = document.createElement("div");
+            p.className = "flip-page";
+            p.style.zIndex = pageZIdx--;
+            p.onclick = () => doFlip(p, pg.audioSrc);
+            const imgHtml = pg.imgSrc
+                ? `<img src="${pg.imgSrc}" alt="ذكرى"/>`
+                : `<span class="ph-label">📸 أضف صورة ${i + 1}</span>`;
+            p.innerHTML = `
+    <div class="page-front">
+      <div class="page-img">${imgHtml}</div>
+      <div class="page-caption">${pg.caption}</div>
+      <span class="page-num">${i + 1}</span>
+    </div>
+    <div class="page-back"></div>`;
+            bookWrap.appendChild(p);
+        });
+
+        const finalPg = document.createElement("div");
+        finalPg.className = "flip-page final-page";
+        finalPg.style.zIndex = pageZIdx--;
+        finalPg.onclick = () => { doFlip(finalPg, null); flipAudio.pause(); clearTimeout(flipStopTimer); };
+        finalPg.innerHTML = `
+  <div class="page-front">
+    <div class="final-page-text">
+      <span style="font-size:2.5rem">🌙</span><br/><br/>
+      الفصل القادم...<br/>
+      لم يُكتب بعد<br/><br/>
+      <span style="font-size:0.9rem;color:var(--text-soft)">وهذا هو أجمل ما فيه</span>
+    </div>
+  </div>
+  <div class="page-back"></div>`;
+        bookWrap.appendChild(finalPg);
+
+        function doFlip(el, audioSrc) {
+            const all = Array.from(bookWrap.children);
+            const idx = all.indexOf(el);
+            if (el.classList.contains("flipped")) {
+                el.classList.remove("flipped");
+                el.style.zIndex = flipPages.length + 3 - idx;
+            } else {
+                el.classList.add("flipped");
+                if (audioSrc) playPageClip(audioSrc);
+                setTimeout(() => {
+                    el.style.zIndex = 0;
+                }, 700);
+            }
+        }
+
+
+        /* ═══════════════════════════════════════════
+     MUSIC PLAYER
+  ═══════════════════════════════════════════ */
+        const audio = document.getElementById("bgAudio");
+        const art = document.getElementById("musicArt");
+        const pbtn = document.getElementById("playBtn");
+        const fill = document.getElementById("prog-fill");
+        const mCur = document.getElementById("m-cur");
+        const mDur = document.getElementById("m-dur");
+        let playing = false;
+
+        function toggleMusic() {
+            if (playing) {
+                audio.pause();
+                art.classList.remove("spinning");
+                pbtn.textContent = "▶";
+                playing = false;
+            } else {
+                audio.play().catch(() => { });
+                art.classList.add("spinning");
+                pbtn.textContent = "⏸";
+                playing = true;
+            }
+        }
+
+        function fmtTime(s) {
+            const m = Math.floor(s / 60);
+            return m + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+        }
+
+        audio.addEventListener("timeupdate", () => {
+            if (!audio.duration) return;
+            fill.style.width = (audio.currentTime / audio.duration) * 100 + "%";
+            mCur.textContent = fmtTime(audio.currentTime);
+        });
+        audio.addEventListener("loadedmetadata", () => {
+            mDur.textContent = fmtTime(audio.duration);
+        });
+
+        function seekMusic(e) {
+            const bar = e.currentTarget;
+            const ratio = e.offsetX / bar.offsetWidth;
+            if (audio.duration) audio.currentTime = ratio * audio.duration;
+        }
+    </script>
+</body>
+
+</html>
